@@ -149,3 +149,14 @@ This repository exists to make that boundary **explicit, testable, and reviewabl
 
 > **If you cannot deterministically assert it,  
 > you must not let AI imagine it.**
+
+---
+
+## Citation
+
+If you reference or adapt this pattern in papers, designs, or systems,
+please consider citing:
+
+> Interface Determinability Gate (IDG) Pattern  
+> Originally articulated by Hironobu Arakawa, 2025.  
+> https://github.com/hironobu-arakawa/interface-determinability-gate

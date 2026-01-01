@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "Interface Determinability Gate (IDG) Pattern"
+message: "If you use or reference this pattern, please cite it as follows."
+authors:
+  - family-names: Arakawa
+    given-names: Hironobu
+date-released: 2026-01-01
+url: "https://github.com/hironobu-arakawa/interface-determinability-gate"
