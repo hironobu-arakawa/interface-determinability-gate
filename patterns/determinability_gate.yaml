@@ -1,0 +1,147 @@
+# Determinability Gate Pattern
+#
+# Purpose
+# -------
+# This pattern defines a guardrail for AI-assisted systems based on
+# **determinability**, not capability.
+#
+# If a state cannot be deterministically asserted from an interface
+# (UI / HMI / console / API) or certified sensing,
+# AI must not infer, assume, or suggest it.
+# In such cases, AI is explicitly detached from decision support.
+#
+# Positioning
+# -----------
+# - This is NOT VCDesign core.
+# - This is a Field-level pattern operating under VCDesign constraints.
+# - Its role is to preserve responsibility and interpretation boundaries
+#   by preventing implicit physical or causal assumptions.
+#
+# What this pattern enforces
+# --------------------------
+# - AI may only reference facts that are determinable without
+#   physical assumptions.
+# - AI must not perform root-cause inference, causal attribution,
+#   or physical reasoning beyond interface-observable facts.
+# - When determinability cannot be guaranteed, AI behavior must
+#   transition to an explicit "detached" state.
+#
+# What this pattern does NOT do
+# -----------------------------
+# - It does not diagnose failures.
+# - It does not infer physical, mechanical, or safety-related causes.
+# - It does not provide recovery decisions or prescriptions.
+# - It does not encode domain-specific knowledge.
+#
+# Domain neutrality
+# -----------------
+# This pattern is intentionally domain-agnostic.
+# Factory systems, medical devices, infrastructure operations, etc.
+# must provide domain vocabulary via profiles or examples,
+# not within this core pattern.
+#
+# Design principle
+# ----------------
+# "If you cannot deterministically assert it,
+#  you must not let AI imagine it."
+#
+# Silence, when required, is a designed and evaluated outcome.
+pattern:
+  id: determinability_gate
+  name: Determinability Gate (Interface-Bounded)
+  status: library-non-core
+  intent: 'Allow AI assistance only where facts are determinable from an operational
+    interface (e.g., UI/HMI/API) or certified sensors. If not determinable, AI is
+    explicitly detached from decision support.
+
+    '
+positioning:
+  under: VCDesign (constraints) / AI positioning
+  note: 'This is not VCDesign core. It is a field constraint to preserve responsibility
+    boundaries.
+
+    Domain-specific mappings (e.g., ''CI'', ''HMI'', ''SCADA'') should live in profiles/examples,
+    not in this core pattern.
+
+    '
+scope:
+  applies_to:
+  - abnormal_operation
+  - recovery_attempt
+  - post_isolation_support
+  excludes:
+  - physical_root_cause_inference
+  - hazard/safety_chain_diagnosis
+  - non_determinable_power_or_supply_assumption
+definitions:
+  determinable_fact:
+    description: >
+      A fact that can be asserted without physical or causal assumption,
+      based solely on interface-observable state or certified signals.
+    allowed_sources:
+      - interface_observable_state
+      - certified_signal
+      - human_interface_operation_log
+
+  non_determinable_state:
+    description: >
+      Any state that requires assumption, interpretation,
+      physical inspection, recurrence, or disassembly
+      to be asserted.
+    includes:
+      - inferred_physical_condition
+      - causal_attribution
+      - hidden_state_behind_interface
+      - condition_requiring_assumption
+
+  interface_observable_state:
+    description: >
+      A state explicitly presented by an interface
+      as-is, without interpretation.
+    examples:
+      - enabled_or_disabled
+      - displayed_message
+      - visible_status_indicator
+
+  certified_signal:
+    description: >
+      A signal whose semantics are explicitly defined and trusted
+      for assertion without interpretation.
+    note: >
+      Certification is a domain responsibility and
+      is defined outside this pattern.
+
+  human_interface_operation_log:
+    description: >
+      A factual record of human-performed operations
+      mediated through an interface.
+
+gate_rules:
+
+  - rule_id: G1
+    when:
+      fact_source: not_in_allowed_sources
+    action: detach_ai
+    rationale: >
+      The state cannot be asserted without assumption.
+
+  - rule_id: G2
+    when:
+      state_type: non_determinable_state
+    action: detach_ai
+    rationale: >
+      The state requires interpretation or physical assumption.
+
+  - rule_id: G3
+    when:
+      interface_state: observable_but_not_explanatory
+    action: detach_ai
+    rationale: >
+      Interface presents a state without determinable cause.
+
+  - rule_id: G4
+    when:
+      ai_request: causal_or_prescriptive
+    action: detach_ai
+    rationale: >
+      Causal inference or prescription exceeds responsibility boundary.

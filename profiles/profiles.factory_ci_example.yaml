@@ -1,0 +1,20 @@
+profile:
+  id: factory_ci_example
+  name: Factory Control Interface (example profile)
+  maps:
+    interface_kind:
+    - HMI
+    - ControlPanel
+    - SCADA
+    gate_reason_source: HMI displayed message only
+    do_not_model:
+    - safety_device_cause
+    - power_supply_cause
+  examples:
+    interface_element_prefixes:
+    - 'HMI:'
+    - 'PANEL:'
+    target_ref_namespace:
+    - 'axis:'
+    - 'inverter:'
+    - 'station:'

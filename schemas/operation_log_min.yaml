@@ -1,0 +1,12 @@
+log:
+  incident_id: '...'
+  boundary_trigger: '...'
+  operations:
+  - seq: 1
+    interface_element: UI:BUTTON_X
+    operation: press|toggle|set|confirm
+    target_ref: component:xyz
+    gate:
+      interface_state: enabled|disabled|unknown
+      interface_message: as_displayed_optional
+    observed_outcome: no_change|rejected|changed|alarm|unknown
