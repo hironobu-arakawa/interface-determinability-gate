@@ -9,4 +9,9 @@ log:
     gate:
       interface_state: enabled|disabled|unknown
       interface_message: as_displayed_optional
+      # Optional routing annotations (must not change pass/block judgement)
+      source_method: direct_api|certified_signal|screen_text|computer_vision|manual_entry
+      interaction_type: system_display|system_event|human_input|device_action
+      evidence_ref: reference_to_logs_or_images_optional
+      quality_band: high|medium|low_optional
     observed_outcome: no_change|rejected|changed|alarm|unknown

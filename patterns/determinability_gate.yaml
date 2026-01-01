@@ -74,6 +74,89 @@ scope:
   - hazard/safety_chain_diagnosis
   - non_determinable_power_or_supply_assumption
 definitions:
+
+  gate_output:
+    description: >
+      Determinability Gate output is intentionally minimal.
+      The gate emits a binary decision (**pass**/**block**) plus optional
+      annotations for downstream routing.
+
+      - **decision** is the only normative outcome.
+      - **annotations** are *non-normative* attributes that MUST NOT change
+        the determinability judgement. They exist to support risk-based
+        downstream handling (e.g., batch vs spot-check vs per-item review).
+    fields:
+      decision:
+        type: enum
+        values: [pass, block]
+      reason:
+        type: enum
+        values: [interface_determinable, not_determinable]
+      annotations:
+        type: object
+        optional: true
+        contains: [source_method, interaction_type, evidence_ref, quality_band]
+
+  gate_annotations:
+    description: >
+      Optional, discrete tags attached to a gate output.
+      These tags describe the *nature of the evidence* (source / interaction)
+      so that downstream RP (approval layer) can decide whether to
+      batch-approve, spot-check, or require per-item review.
+      
+      Avoid numerical confidence unless absolutely required.
+      Prefer coarse bands with explicit provenance.
+
+  source_method:
+    description: >
+      How the fact was obtained.
+      This is not a correctness score; it is provenance.
+    type: enum
+    values:
+      - direct_api
+      - certified_signal
+      - screen_text
+      - computer_vision
+      - manual_entry
+    notes:
+      - direct_api is typically batch-approvable when the API is contract-trusted.
+      - computer_vision often needs stricter downstream review due to false positives.
+
+  interaction_type:
+    description: >
+      What kind of interface interaction produced the record.
+      Distinguish passive display from active human input.
+    type: enum
+    values:
+      - system_display
+      - system_event
+      - human_input
+      - device_action
+    notes:
+      - system_display/event may be batch-approved.
+      - human_input/device_action may require per-item review due to responsibility weight.
+
+  evidence_ref:
+    description: >
+      A reference to supporting evidence that can be inspected by a human.
+      Example: log_id, screenshot_id, camera_frame_id, trace_id.
+    type: string
+    examples:
+      - "log://hmi/ALM-4512"
+      - "img://camera-12/frame/2026-01-02T10:12:03+09:00"
+      - "ticket://MAINT-2026-00031"
+
+  quality_band:
+    description: >
+      Coarse quality classification for routing purposes.
+      This is intentionally *not* a probability.
+    type: enum
+    values: [high, medium, low]
+    optional: true
+    notes:
+      - Use only when downstream routing cannot be derived from source_method.
+      - If present, MUST be accompanied by evidence_ref.
+
   determinable_fact:
     description: >
       A fact that can be asserted without physical or causal assumption,
@@ -117,6 +200,14 @@ definitions:
       mediated through an interface.
 
 gate_rules:
+
+  # NOTE
+  # ----
+  # This library expresses only *detachment* rules.
+  # Implementations may treat "no rule matched" as:
+  #   decision: pass
+  #   reason: interface_determinable
+  #   annotations: { ...optional }
 
   - rule_id: G1
     when:

@@ -1,6 +1,6 @@
 # Interface Determinability Gate
 
-**Role**: Field-level boundary (non-core to decision architecture)
+**Role**: Field (non-core)  
 **Scope**: AI detachment guardrail  
 **Primary Boundary**: Responsibility  
 **Secondary Boundary**: Interpretation  
@@ -19,9 +19,6 @@ This repository defines a **determinability guardrail** for AI-assisted systems.
 
 This rule exists to **protect responsibility boundaries**,  
 not to limit sensing, analytics, or automation capabilities.
-
-This schema does not represent operational correctness.
-It exists solely to preserve whether a human or AI could have determined the situation at the interface level.
 
 ---
 
@@ -54,6 +51,24 @@ This guardrail uses a single criterion:
 - **No** → AI must detach from decision support  
 
 “Seems likely”, “probably”, or “usually” are explicitly disallowed.
+
+---
+
+## Optional: routing annotations (without changing the judgment)
+
+Some environments mix evidence qualities (e.g., contract-trusted API vs computer vision)
+and interaction weights (e.g., system display vs human input). In such cases,
+**pass/block alone is insufficient for scalable review**.
+
+This pattern allows *optional* **annotations** to be attached to gate outputs so that a downstream
+approval layer (RP) can route items to:
+
+- **batch approval** (low risk)
+- **spot-check** (medium risk)
+- **per-item review** (high responsibility / higher noise sources)
+
+These annotations are **non-normative**: they must never change a determinability decision.
+See `patterns/determinability_gate.yaml` for the vocabulary (`source_method`, `interaction_type`, `evidence_ref`, `quality_band`).
 
 ---
 
